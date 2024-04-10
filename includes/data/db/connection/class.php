@@ -47,4 +47,12 @@ class Connection
 
 		return $this->connection_result;
 	}
+
+	public function connect() {
+		$this->mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database);
+	}
+
+	public function get_mysqli() {
+		return $this->mysqli;
+	}
 }
