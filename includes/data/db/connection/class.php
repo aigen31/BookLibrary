@@ -2,57 +2,58 @@
 
 namespace BookLibrary\Data\DB;
 
+require_once __DIR__ . '/../../environment/class.php';
+
+use BookLibrary\Data\Environment;
+Environment::get();
+
 class Connection
 {
-	private $host;
-	private $username;
-	private $password;
-	private $database;
-	private $mysqli;
-	private $connection_result;
+	private static $host;
+	private static $username;
+	private static $password;
+	private static $database;
+	private static $mysqli;
+	private static $connection_result;
 
-	public function __construct(string $host, string $username, string $password, string $database)
+	public static function get_host()
 	{
-		$this->host = $host;
-		$this->username = $username;
-		$this->password = $password;
-		$this->database = $database;
+		return self::$host;
 	}
 
-	public function get_host()
+	public static function get_username()
 	{
-		return $this->host;
+		return self::$username;
 	}
 
-	public function get_username()
+	public static function get_password()
 	{
-		return $this->username;
+		return self::$password;
 	}
 
-	public function get_password()
+	public static function get_database()
 	{
-		return $this->password;
+		return self::$database;
 	}
 
-	public function get_database()
-	{
-		return $this->database;
+	private static function authorization() {
+		self::$host = $_ENV['MYSQL_HOST'];
+		self::$username = $_ENV['MYSQL_USERNAME'];
+		self::$password = $_ENV['MYSQL_PASSWORD'];
+		self::$database = $_ENV['MYSQL_DATABASE'];
+		self::$mysqli = new \mysqli(self::$host, self::$username, self::$password, self::$database);
 	}
 
-	public function get_connection_result()
+	public static function get_result()
 	{
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-		$this->mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database);
-		$this->connection_result = $this->mysqli->real_connect($this->host, $this->username, $this->password, $this->database);
-
-		return $this->connection_result;
+		self::authorization();
+		self::$connection_result = self::$mysqli->real_connect(self::$host, self::$username, self::$password, self::$database);
+		return self::$connection_result;
 	}
 
-	public function connect() {
-		$this->mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database);
-	}
-
-	public function get_mysqli() {
-		return $this->mysqli;
+	public static function get_mysqli() {
+		self::authorization();
+		return self::$mysqli;
 	}
 }
