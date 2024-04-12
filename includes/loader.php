@@ -1,4 +1,8 @@
 <?php
 namespace TestLibrary;
 
-require_once 'app/layout.php';
+if (!empty($_POST['handler'])) {
+	require_once __DIR__ . '/handlers/loader.php';
+} else {
+	require_once __DIR__ . '/app/layout.php';
+}
