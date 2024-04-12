@@ -4,12 +4,13 @@ namespace BookLibrary\App\Layout;
 
 require_once __DIR__ . '/../data/environment/class.php';
 require_once __DIR__ . '/../data/db/connection/class.php';
+require_once __DIR__ . '/../objects/book/class.php';
 
 use BookLibrary\Data\Environment;
 use BookLibrary\Data\DB\Connection;
+use BookLibrary\Objects\Book;
 
 Environment::get();
-$connection = new Connection($_ENV['MYSQL_HOST'], $_ENV['MYSQL_USERNAME'], $_ENV['MYSQL_PASSWORD'], $_ENV['MYSQL_DATABASE']);
 ?>
 
 <!DOCTYPE html>
@@ -18,6 +19,17 @@ $connection = new Connection($_ENV['MYSQL_HOST'], $_ENV['MYSQL_USERNAME'], $_ENV
 <head>
 	<meta charset="UTF-8">
 	<title>Учетная система библиотеки</title>
+	<style>
+		table, th, td {
+			border: 1px solid;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		th, td {
+			padding: 10px;
+		}
+	</style>
 </head>
 
 <body>
@@ -25,32 +37,20 @@ $connection = new Connection($_ENV['MYSQL_HOST'], $_ENV['MYSQL_USERNAME'], $_ENV
 	<h2>Данные соединения:</h2>
 	<p>Соединение:
 		<?php
-			if ($connection->get_connection_result()) {
+			if (Connection::get_result()) {
 				echo 'Соединение установлено';
 			} else {
 				echo 'Соединение не установлено';
 			}
 		?>
 	</p>
-	<p>Хост: <?php echo $connection->get_host(); ?></p>
-	<p>Логин: <?php echo $connection->get_username(); ?></p>
-	<p>Пароль: <?php echo $connection->get_password(); ?></p>
-	<p>БД: <?php echo $connection->get_database(); ?></p>
+	<p>Хост: <?php echo Connection::get_host(); ?></p>
+	<p>Логин: <?php echo Connection::get_username(); ?></p>
+	<p>Пароль: <?php echo Connection::get_password(); ?></p>
+	<p>БД: <?php echo Connection::get_database(); ?></p>
 
 	<h2>Добавление книги</h2>
-	<form id="addBookForm">
-		<label for="title">Название:</label><br>
-		<input type="text" id="title" name="title" required><br>
-		<label for="author">Автор:</label><br>
-		<input type="text" id="author" name="author" required><br>
-		<label for="year">Год издания:</label><br>
-		<input type="number" id="year" name="year"><br>
-		<label for="pages">Количество страниц:</label><br>
-		<input type="number" id="pages" name="pages"><br>
-		<label for="isbn">ISBN:</label><br>
-		<input type="text" id="isbn" name="isbn"><br>
-		<button type="submit">Добавить книгу</button>
-	</form>
+	<?php include(__DIR__ . '/parts/forms/book_add.php'); ?>
 
 	<h2>Поиск книг</h2>
 	<form id="searchBooksForm">
@@ -63,8 +63,8 @@ $connection = new Connection($_ENV['MYSQL_HOST'], $_ENV['MYSQL_USERNAME'], $_ENV
 	<table id="booksList">
 		<thead>
 			<tr>
-				<th>Название</th>
 				<th>Автор</th>
+				<th>Название</th>
 				<th>Год издания</th>
 				<th>Страниц</th>
 				<th>ISBN</th>
@@ -72,14 +72,22 @@ $connection = new Connection($_ENV['MYSQL_HOST'], $_ENV['MYSQL_USERNAME'], $_ENV
 			</tr>
 		</thead>
 		<tbody>
-			<!-- Книги будут добавляться сюда динамически -->
+			<?php
+				$book = new Book();
+
+				foreach($book->get() as $item) {
+					echo '<tr>';
+					echo '<td>' . $item[1] . '</td>';
+					echo '<td>' . $item[2] . '</td>';
+					echo '<td>' . $item[3] . '</td>';
+					echo '<td>' . $item[4] . '</td>';
+					echo '<td>' . $item[5] . '</td>';
+					echo '<td>' . '</td>';
+					echo '</tr>';
+				}
+			?>
 		</tbody>
 	</table>
-
-	<script>
-		// Здесь можно добавить JavaScript для обработки форм и взаимодействия с сервером
-	</script>
-
 </body>
 
 </html>
