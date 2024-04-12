@@ -1,2 +1,2 @@
 <?php
-require 'includes/loader.php';
+require_once 'includes/loader.php';
